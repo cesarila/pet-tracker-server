@@ -47,7 +47,24 @@ func setupRouter() *gin.Engine {
 
 	/*Update status for an existing pet*/
 	r.PATCH("/pets/:petId", func(c *gin.Context) {
-		c.String(http.StatusNotImplemented, "TODO: Implement Me")
+		// c.String(http.StatusNotImplemented, "TODO: Implement Me")
+		pet := c.Params.ByName("petId")
+		_, ok := db[pet]
+		if ok {
+			var json struct {
+				Value string `json:"updated_status" binding:"required"`
+			}
+
+			err := c.Bind(&json)
+			if err == nil {
+				db[pet] = json.Value
+				c.JSON(http.StatusOK, gin.H{"status": "ok"})
+			} else {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "JSON Binding Failed: " + err.Error()})
+			}
+		} else {
+			c.JSON(http.StatusNotFound, gin.H{"status": "Pet ID Not Found"})
+		}
 	})
 
 	return r
