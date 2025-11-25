@@ -1,0 +1,60 @@
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// TODO: Figure out if using a type like this is helpful or not
+type Pet struct {
+	Name   string `json:"name" binding:"required"`
+	Inside bool   `json:"inside" binding:"required"`
+}
+
+//Some code written with reference to https://github.com/gin-gonic/examples/blob/master/basic/main.go
+
+// Placeholder for actual database
+var db = make(map[string]string)
+
+func setupRouter() *gin.Engine {
+	r := gin.Default()
+
+	/*Gets all pets and their status */
+	r.GET("/pets", func(c *gin.Context) {
+		// c.String(http.StatusNotImplemented, "TODO: Implement Me")
+
+		// I think this is ok because db placeholder is a map of string to string, and gin.H is a shortcut for a map of string to any.
+		c.JSON(http.StatusOK, db)
+	})
+
+	/*Post a new pet*/
+	r.POST("/pets", func(c *gin.Context) {
+		// c.String(http.StatusNotImplemented, "TODO: Implement Me")
+		var json struct {
+			Value string `json:"new_pet_name" binding:"required"`
+		}
+
+		err := c.Bind(&json)
+		if err == nil {
+			//new pet assumed to be inside
+			db[json.Value] = "inside"
+			c.JSON(http.StatusOK, gin.H{"status": "ok"})
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "JSON Binding Failed: " + err.Error()})
+		}
+	})
+
+	/*Update status for an existing pet*/
+	r.PATCH("/pets/:petId", func(c *gin.Context) {
+		c.String(http.StatusNotImplemented, "TODO: Implement Me")
+	})
+
+	return r
+
+}
+
+func api() {
+	r := setupRouter()
+	r.Run(":8080")
+}
