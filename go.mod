@@ -1,4 +1,4 @@
-module main
+module github.com/cesarila/pet-tracker-server
 
 go 1.23.5
 
