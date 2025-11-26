@@ -19,9 +19,10 @@ func TestPostRoute(t *testing.T) {
 	w := httptest.NewRecorder()
 	var jsonString = []byte(`{"new_pet_name": "cat1"}`)
 	req, _ := http.NewRequest("POST", "/pets", bytes.NewBuffer(jsonString))
+	req.Header.Add("content-type", "application/json")
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, "ok", w.Body.String())
+	assert.Equal(t, `{"status":"ok"}`, w.Body.String())
 
 }
