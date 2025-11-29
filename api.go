@@ -72,6 +72,18 @@ func setupRouter() *gin.Engine {
 		}
 	})
 
+	r.DELETE("/pets/:petId", func(c *gin.Context) {
+		pet := c.Params.ByName("petId")
+		_, ok := db[pet]
+		if ok {
+			delete(db, pet)
+			c.JSON(http.StatusOK, gin.H{"status": "ok"})
+		} else {
+			c.JSON(http.StatusNotFound, gin.H{"status": "Pet ID Not Found"})
+		}
+
+	})
+
 	return r
 
 }

@@ -67,3 +67,29 @@ func TestPatchRouteNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code)
 	assert.Equal(t, `{"status":"Pet ID Not Found"}`, w.Body.String())
 }
+
+func TestDeleteRouteSuccess(t *testing.T) {
+	router := setupRouter()
+
+	w := httptest.NewRecorder()
+	var jsonString = []byte(`{"updated_status": "outside"}`)
+	req, _ := http.NewRequest("DELETE", "/pets/cat1", bytes.NewBuffer(jsonString))
+	req.Header.Add("content-type", "application/json")
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, `{"status":"ok"}`, w.Body.String())
+}
+
+func TestDeleteRouteNotFound(t *testing.T) {
+	router := setupRouter()
+
+	w := httptest.NewRecorder()
+	var jsonString = []byte(`{"updated_status": "outside"}`)
+	req, _ := http.NewRequest("DELETE", "/pets/cat1", bytes.NewBuffer(jsonString))
+	req.Header.Add("content-type", "application/json")
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	assert.Equal(t, `{"status":"Pet ID Not Found"}`, w.Body.String())
+}
