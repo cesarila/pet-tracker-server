@@ -28,3 +28,29 @@ func TestPostRoute(t *testing.T) {
 	assert.Equal(t, `{"status":"ok"}`, w.Body.String())
 
 }
+
+func TestPatchRouteSuccess(t *testing.T) {
+	router := setupRouter()
+
+	w := httptest.NewRecorder()
+	var jsonString = []byte(`{"updated_status": "outside"}`)
+	req, _ := http.NewRequest("PATCH", "/pets/cat1", bytes.NewBuffer(jsonString))
+	req.Header.Add("content-type", "application/json")
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, `{"status":"ok"}`, w.Body.String())
+}
+
+func TestPatchRouteNotFound(t *testing.T) {
+	router := setupRouter()
+
+	w := httptest.NewRecorder()
+	var jsonString = []byte(`{"updated_status": "outside"}`)
+	req, _ := http.NewRequest("PATCH", "/pets/cat2", bytes.NewBuffer(jsonString))
+	req.Header.Add("content-type", "application/json")
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	assert.Equal(t, `{"status":"Pet ID Not Found"}`, w.Body.String())
+}
