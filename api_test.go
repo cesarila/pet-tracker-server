@@ -15,7 +15,7 @@ import (
 // TODO: Change package name from main, see: https://appliedgo.net/testmain/
 // TODO: Read on this: https://mortenvistisen.com/posts/integration-tests-with-docker-and-go
 // Also: https://github.com/MBvisti/integration-test-in-go/tree/vanilla-approach/running-integration-tests-using-std-library
-func TestPostRoute(t *testing.T) {
+func TestPostRouteSuccess(t *testing.T) {
 	router := setupRouter()
 
 	w := httptest.NewRecorder()
@@ -27,6 +27,18 @@ func TestPostRoute(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, `{"status":"ok"}`, w.Body.String())
 
+}
+
+func TestGetRoute(t *testing.T) {
+	router := setupRouter()
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/pets", nil)
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Contains(t, w.Body.String(), "cat1")
+	assert.Contains(t, w.Body.String(), "inside")
 }
 
 func TestPostRouteAlreadyExists(t *testing.T) {
