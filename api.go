@@ -37,9 +37,14 @@ func setupRouter() *gin.Engine {
 
 		err := c.Bind(&json)
 		if err == nil {
-			//new pet assumed to be inside
-			db[json.Value] = "inside"
-			c.JSON(http.StatusOK, gin.H{"status": "ok"})
+			_, exists := db[json.Value]
+			if exists {
+				c.JSON(http.StatusConflict, gin.H{"status": "A pet with this name already exists."})
+			} else {
+				//new pet assumed to be inside
+				db[json.Value] = "inside"
+				c.JSON(http.StatusOK, gin.H{"status": "ok"})
+			}
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "JSON Binding Failed: " + err.Error()})
 		}

@@ -29,6 +29,19 @@ func TestPostRoute(t *testing.T) {
 
 }
 
+func TestPostRouteAlreadyExists(t *testing.T) {
+	router := setupRouter()
+
+	w := httptest.NewRecorder()
+	var jsonString = []byte(`{"new_pet_name": "cat1"}`)
+	req, _ := http.NewRequest("POST", "/pets", bytes.NewBuffer(jsonString))
+	req.Header.Add("content-type", "application/json")
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusConflict, w.Code)
+	assert.Equal(t, `{"status":"A pet with this name already exists."}`, w.Body.String())
+}
+
 func TestPatchRouteSuccess(t *testing.T) {
 	router := setupRouter()
 
