@@ -12,13 +12,29 @@ type Pet struct {
 	Inside bool   `json:"inside" binding:"required"`
 }
 
-//Some code written with reference to https://github.com/gin-gonic/examples/blob/master/basic/main.go
+//Some code written with reference to https://github.com/gin-gonic/examples/blob/master/basic/main.gou
+
+// CORS stuff helped by this post: https://jgunnink.substack.com/p/gin-framework-in-go-implementing-cors-effectively
+
+func CorsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PATCH, DELETE")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+		c.Next()
+	}
+}
 
 // Placeholder for actual database
 var db = make(map[string]string)
 
 func setupRouter() *gin.Engine {
 	r := gin.Default()
+	r.Use(CorsMiddleware())
 
 	/*Gets all pets and their status */
 	r.GET("/pets", func(c *gin.Context) {
