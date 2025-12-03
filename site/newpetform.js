@@ -2,6 +2,8 @@
 
 const newPetFormElement = document.querySelector('form#newpetform')
 
+const postNewPetRequest = new XMLHttpRequest();
+
 const getFormJSON = (form) => {
     const data = new FormData(form);
     return Array.from(data.keys()).reduce((result, key) => {
@@ -19,7 +21,12 @@ const handler = (event) => {
     const valid = newPetFormElement.reportValidity();
     if (valid){
         const result = getFormJSON(newPetFormElement);
-        console.log(result)
+        console.log(result);
+        postNewPetRequest.open("POST", "http://localhost:8080/pets");
+        postNewPetRequest.setRequestHeader("Content-Type", "application/json");
+        postNewPetRequest.onload = () => console.log(postNewPetRequest.response);
+        postNewPetRequest.send(JSON.stringify(result));
+
     }
 }
 

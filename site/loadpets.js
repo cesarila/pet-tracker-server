@@ -3,10 +3,10 @@
 // https://www.w3schools.com/js/js_ajax_http.asp
 // https://www.w3schools.com/jsref/met_table_insertrow.asp
 
-const xhttp = new XMLHttpRequest();
+const getPetsRequest = new XMLHttpRequest();
 
-xhttp.onload = () => {
-    const pets = JSON.parse(xhttp.response)
+getPetsRequest.onload = () => {
+    const pets = JSON.parse(getPetsRequest.response)
 
     let rowIndex = 0
     
@@ -24,8 +24,8 @@ xhttp.onload = () => {
 
 }
 
-xhttp.open("GET", "http://localhost:8080/pets");
-xhttp.send();
+getPetsRequest.open("GET", "http://localhost:8080/pets");
+getPetsRequest.send();
 
 
 
