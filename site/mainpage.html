@@ -3,9 +3,14 @@
 <head>
     <title>Pet Status Tracker</title>
     <link rel="stylesheet" href="mainpage.css">
-    <script src="mainpage.js"></script>
 </head>
+<!-- made in reference to https://jordanfinners.dev/blogs/how-to-easily-convert-html-form-to-json/ -->
 <body>
-    <button>Add Pet</button>
+    <form name="newpetform" id="newpetform">
+        <label for="new_pet_name">New Pet Name:</label>
+        <input type="text" id="new_pet_name" name="new_pet_name"><br><br>
+        <button type="submit">Submit</button>
+    <form>
+    <script src="mainpage.js"></script>    
 </body>
 </html>
