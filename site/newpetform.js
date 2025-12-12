@@ -1,4 +1,7 @@
 // made with close reference to https://jordanfinners.dev/blogs/how-to-easily-convert-html-form-to-json/
+// referenced the following to reload pets at the proper time:
+// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequestEventTarget/load_event
+import { refreshPetData } from "./modules/utils.js"
 
 const newPetFormElement = document.querySelector('form#newpetform')
 
@@ -26,8 +29,8 @@ const handler = (event) => {
         postNewPetRequest.setRequestHeader("Content-Type", "application/json");
         postNewPetRequest.onload = () => console.log(postNewPetRequest.response);
         postNewPetRequest.send(JSON.stringify(result));
-
     }
 }
 
 newPetFormElement.addEventListener("submit", handler)
+postNewPetRequest.addEventListener("loadend", refreshPetData)
