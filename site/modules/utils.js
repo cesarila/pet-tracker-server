@@ -3,6 +3,8 @@
 // https://www.w3schools.com/js/js_ajax_http.asp
 // https://www.w3schools.com/jsref/met_table_insertrow.asp
 // https://developer.mozilla.org/en-US/docs/Web/API/Element/replaceChildren
+const api_url = "http://localhost:8080"
+
 function refreshPetData() {
     const getPetsRequest = new XMLHttpRequest();
 
@@ -35,13 +37,13 @@ function refreshPetData() {
         bodyElement.appendChild(displayAreaElement);
     };
 
-    getPetsRequest.open("GET", "http://localhost:8080/pets");
+    getPetsRequest.open("GET", `${api_url}/pets`);
     getPetsRequest.send();
 }
 
 function patchPetData(petId, newStatus) {
     const patchPetRequest = new XMLHttpRequest();
-    patchPetRequest.open("PATCH", `http://localhost:8080/pets/${petId}`);
+    patchPetRequest.open("PATCH", `${api_url}/pets/${petId}`);
     let body = { updated_status: `${newStatus}` };
     patchPetRequest.setRequestHeader("Content-Type", "application/json");
     patchPetRequest.onload = () => console.log(patchPetRequest.response);
@@ -49,9 +51,18 @@ function patchPetData(petId, newStatus) {
     patchPetRequest.send(JSON.stringify(body));
 }
 
+function postNewPet(bodyObject){
+    const postNewPetRequest = new XMLHttpRequest();
+    postNewPetRequest.open("POST", `${api_url}/pets`);
+    postNewPetRequest.setRequestHeader("Content-Type", "application/json");
+    postNewPetRequest.onload = () => console.log(postNewPetRequest.response);
+    postNewPetRequest.addEventListener("loadend", refreshPetData)
+    postNewPetRequest.send(JSON.stringify(bodyObject));
+}
+
 function deletePetData(petId) {
     const deletePetRequest = new XMLHttpRequest();
-    deletePetRequest.open("DELETE", `http://localhost:8080/pets/${petId}`);
+    deletePetRequest.open("DELETE", `${api_url}/pets/${petId}`);
     deletePetRequest.onload = () => console.log(deletePetRequest.response);
     deletePetRequest.addEventListener("loadend", refreshPetData);
     deletePetRequest.send();
@@ -73,4 +84,4 @@ function createDeleteButton(petId) {
     return newButton;
 }
 
-export { refreshPetData, patchPetData };
+export { refreshPetData };
