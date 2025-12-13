@@ -23,6 +23,7 @@ func CorsMiddleware() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PATCH, DELETE")
 
 		if c.Request.Method == "OPTIONS" {
+			c.Writer.Header().Set("Accept-Patch", "application/json")
 			c.AbortWithStatus(http.StatusNoContent)
 			return
 		}
