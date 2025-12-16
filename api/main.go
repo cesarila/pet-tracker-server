@@ -14,6 +14,6 @@ func init() {
 
 func main() {
 	conf := New()
-
+	initDatabase(conf.Database.SqlitePath)
 	api(conf)
 }

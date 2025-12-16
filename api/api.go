@@ -7,12 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: Figure out if using a type like this is helpful or not
-type Pet struct {
-	Name   string `json:"name" binding:"required"`
-	Inside bool   `json:"inside" binding:"required"`
-}
-
 //Some code written with reference to https://github.com/gin-gonic/examples/blob/master/basic/main.go
 
 // CORS stuff helped by this post: https://jgunnink.substack.com/p/gin-framework-in-go-implementing-cors-effectively
@@ -32,18 +26,27 @@ func CorsMiddleware(config *Config) gin.HandlerFunc {
 	}
 }
 
-// Placeholder for actual database
-var db = make(map[string]string)
-
 func setupRouter(config *Config) *gin.Engine {
 	r := gin.Default()
 	r.Use(CorsMiddleware(config))
 
 	/*Gets all pets and their status */
 	r.GET("/pets", func(c *gin.Context) {
+		petRows, err := getPets()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"status": "something broke: " + err.Error()})
+		}
 
-		// I think this is ok because db placeholder is a map of string to string, and gin.H is a shortcut for a map of string to any.
-		c.JSON(http.StatusOK, db)
+		var pets = make(map[string]any)
+		for _, row := range petRows {
+			if row.Pet.Inside == true {
+				pets[row.Pet.Name] = "inside"
+			} else {
+				pets[row.Pet.Name] = "outside"
+			}
+		}
+		c.JSON(http.StatusOK, pets)
+
 	})
 
 	/*Post a new pet*/
@@ -54,14 +57,18 @@ func setupRouter(config *Config) *gin.Engine {
 
 		err := c.Bind(&json)
 		if err == nil {
-			_, exists := db[json.Value]
-			if exists {
-				c.JSON(http.StatusConflict, gin.H{"status": "A pet with this name already exists."})
-			} else {
-				//new pet assumed to be inside
-				db[json.Value] = "inside"
-				c.JSON(http.StatusOK, gin.H{"status": "ok"})
+			newPet := Pet{Name: json.Value, Inside: true}
+			rowsAffected, err := addPet(&newPet)
+
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"status": "something broke: " + err.Error()})
 			}
+			if rowsAffected == 1 {
+				c.JSON(http.StatusOK, gin.H{"status": "ok"})
+			} else {
+				c.JSON(http.StatusConflict, gin.H{"status": "A pet with this name already exists."})
+			}
+
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "JSON Binding Failed: " + err.Error()})
 		}
@@ -69,32 +76,42 @@ func setupRouter(config *Config) *gin.Engine {
 
 	/*Update status for an existing pet*/
 	r.PATCH("/pets/:petId", func(c *gin.Context) {
-		pet := c.Params.ByName("petId")
-		_, ok := db[pet]
-		if ok {
-			var json struct {
-				Value string `json:"updated_status" binding:"required"`
-			}
+		petName := c.Params.ByName("petId")
 
-			err := c.Bind(&json)
-			if err == nil {
-				db[pet] = json.Value
+		var json struct {
+			Value string `json:"updated_status" binding:"required"`
+		}
+
+		err := c.Bind(&json)
+		if err == nil {
+			isNowInside := json.Value == "inside"
+			updatedPet := Pet{Name: petName, Inside: isNowInside}
+			rowsAffected, err := updatePetStatus(&updatedPet)
+
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"status": "something broke: " + err.Error()})
+			} else if rowsAffected == 1 {
 				c.JSON(http.StatusOK, gin.H{"status": "ok"})
 			} else {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "JSON Binding Failed: " + err.Error()})
+				c.JSON(http.StatusNotFound, gin.H{"status": "Pet ID Not Found"})
 			}
 		} else {
-			c.JSON(http.StatusNotFound, gin.H{"status": "Pet ID Not Found"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "JSON Binding Failed: " + err.Error()})
 		}
+
 	})
 
 	r.DELETE("/pets/:petId", func(c *gin.Context) {
 		pet := c.Params.ByName("petId")
-		_, ok := db[pet]
-		if ok {
-			delete(db, pet)
+		toDelete := Pet{Name: pet}
+		rowsAffected, err := deletePet(&toDelete)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"status": "something broke " + err.Error()})
+		}
+		if rowsAffected >= 1 {
 			c.JSON(http.StatusOK, gin.H{"status": "ok"})
-		} else {
+		} else if rowsAffected == 0 {
 			c.JSON(http.StatusNotFound, gin.H{"status": "Pet ID Not Found"})
 		}
 
