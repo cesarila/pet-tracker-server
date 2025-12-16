@@ -1,3 +1,4 @@
 *.txt
 api/*debug_bin*
 .env
+*.db
