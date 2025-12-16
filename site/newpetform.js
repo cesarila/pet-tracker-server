@@ -23,7 +23,7 @@ const handler = (event) => {
     if (valid){
         const result = getFormJSON(newPetFormElement);
         console.log(result);
-        postNewPetRequest(result);
+        postNewPet(result);
     }
 }
 

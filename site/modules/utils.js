@@ -84,4 +84,4 @@ function createDeleteButton(petId) {
     return newButton;
 }
 
-export { refreshPetData };
+export { refreshPetData, postNewPet };
