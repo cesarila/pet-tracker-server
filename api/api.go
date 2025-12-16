@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,13 +13,13 @@ type Pet struct {
 	Inside bool   `json:"inside" binding:"required"`
 }
 
-//Some code written with reference to https://github.com/gin-gonic/examples/blob/master/basic/main.gou
+//Some code written with reference to https://github.com/gin-gonic/examples/blob/master/basic/main.go
 
 // CORS stuff helped by this post: https://jgunnink.substack.com/p/gin-framework-in-go-implementing-cors-effectively
 
-func CorsMiddleware() gin.HandlerFunc {
+func CorsMiddleware(config *Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:8000")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", fmt.Sprintf("%s:%d", config.Frontend.Host, config.Frontend.Port))
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PATCH, DELETE")
 
@@ -34,9 +35,9 @@ func CorsMiddleware() gin.HandlerFunc {
 // Placeholder for actual database
 var db = make(map[string]string)
 
-func setupRouter() *gin.Engine {
+func setupRouter(config *Config) *gin.Engine {
 	r := gin.Default()
-	r.Use(CorsMiddleware())
+	r.Use(CorsMiddleware(config))
 
 	/*Gets all pets and their status */
 	r.GET("/pets", func(c *gin.Context) {
@@ -106,7 +107,7 @@ func setupRouter() *gin.Engine {
 
 }
 
-func api() {
-	r := setupRouter()
-	r.Run(":8080")
+func api(config *Config) {
+	r := setupRouter(config)
+	r.Run(fmt.Sprintf(":%d", config.ApiPort))
 }
