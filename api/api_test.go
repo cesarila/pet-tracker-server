@@ -29,7 +29,6 @@ func (suite *ApiTestSuite) SetupTest() {
 }
 
 func postCatOne(suite *ApiTestSuite) {
-	//router := setupRouter(config)
 	w := httptest.NewRecorder()
 	var jsonString = []byte(`{"new_pet_name": "cat1"}`)
 	req, _ := http.NewRequest("POST", "/pets", bytes.NewBuffer(jsonString))
@@ -38,7 +37,6 @@ func postCatOne(suite *ApiTestSuite) {
 }
 
 func (suite *ApiTestSuite) TestPostRouteSuccess() {
-	//router := setupRouter(suite.Config)
 
 	w := httptest.NewRecorder()
 	var jsonString = []byte(`{"new_pet_name": "newPostedCat"}`)
@@ -53,7 +51,6 @@ func (suite *ApiTestSuite) TestPostRouteSuccess() {
 
 func (suite *ApiTestSuite) TestGetRoute() {
 	postCatOne(suite) //set up for test
-	//router := setupRouter(suite.Config)
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/pets", nil)
@@ -66,7 +63,6 @@ func (suite *ApiTestSuite) TestGetRoute() {
 
 func (suite *ApiTestSuite) TestPostRouteAlreadyExists() {
 	postCatOne(suite)
-	//router := setupRouter(suite.Config)
 
 	w := httptest.NewRecorder()
 	var jsonString = []byte(`{"new_pet_name": "cat1"}`)
@@ -80,7 +76,6 @@ func (suite *ApiTestSuite) TestPostRouteAlreadyExists() {
 
 func (suite *ApiTestSuite) TestPatchRouteSuccess() {
 	postCatOne(suite)
-	//router := setupRouter(suite.Config)
 
 	w := httptest.NewRecorder()
 	var jsonString = []byte(`{"updated_status": "outside"}`)
@@ -93,7 +88,6 @@ func (suite *ApiTestSuite) TestPatchRouteSuccess() {
 }
 
 func (suite *ApiTestSuite) TestPatchRouteNotFound() {
-	//router := setupRouter(suite.Config)
 
 	w := httptest.NewRecorder()
 	var jsonString = []byte(`{"updated_status": "outside"}`)
@@ -107,7 +101,6 @@ func (suite *ApiTestSuite) TestPatchRouteNotFound() {
 
 func (suite *ApiTestSuite) TestDeleteRouteSuccess() {
 	postCatOne(suite)
-	//router := setupRouter(suite.Config)
 
 	w := httptest.NewRecorder()
 	var jsonString = []byte(`{"updated_status": "outside"}`)
@@ -120,7 +113,6 @@ func (suite *ApiTestSuite) TestDeleteRouteSuccess() {
 }
 
 func (suite *ApiTestSuite) TestDeleteRouteNotFound() {
-	//router := setupRouter(suite.Config)
 
 	w := httptest.NewRecorder()
 	var jsonString = []byte(`{"updated_status": "outside"}`)

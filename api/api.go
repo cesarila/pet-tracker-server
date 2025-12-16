@@ -41,7 +41,6 @@ func setupRouter(config *Config) *gin.Engine {
 
 	/*Gets all pets and their status */
 	r.GET("/pets", func(c *gin.Context) {
-		// c.String(http.StatusNotImplemented, "TODO: Implement Me")
 
 		// I think this is ok because db placeholder is a map of string to string, and gin.H is a shortcut for a map of string to any.
 		c.JSON(http.StatusOK, db)
@@ -49,7 +48,6 @@ func setupRouter(config *Config) *gin.Engine {
 
 	/*Post a new pet*/
 	r.POST("/pets", func(c *gin.Context) {
-		// c.String(http.StatusNotImplemented, "TODO: Implement Me")
 		var json struct {
 			Value string `json:"new_pet_name" binding:"required"`
 		}
@@ -71,7 +69,6 @@ func setupRouter(config *Config) *gin.Engine {
 
 	/*Update status for an existing pet*/
 	r.PATCH("/pets/:petId", func(c *gin.Context) {
-		// c.String(http.StatusNotImplemented, "TODO: Implement Me")
 		pet := c.Params.ByName("petId")
 		_, ok := db[pet]
 		if ok {
