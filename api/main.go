@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -14,6 +15,6 @@ func init() {
 
 func main() {
 	conf := New()
-	initDatabase(conf.Database.SqlitePath)
+	initDatabase(fmt.Sprintf("%s/%s", conf.Database.SqliteFolderPath, conf.Database.SqliteFileName))
 	api(conf)
 }

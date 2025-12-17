@@ -8,12 +8,8 @@ import (
 //Made in reference to https://dev.to/craicoverflow/a-no-nonsense-guide-to-environment-variables-in-go-a2f
 
 type DatabaseConfig struct {
-	SqlitePath string
-	DBname     string
-	User       string
-	Password   string
-	Host       string
-	Port       int
+	SqliteFolderPath string
+	SqliteFileName   string
 }
 
 type FrontendCorsConfig struct {
@@ -30,12 +26,8 @@ type Config struct {
 func New() *Config {
 	return &Config{
 		Database: DatabaseConfig{
-			SqlitePath: getEnv("SQLITE_DB_PATH", ""),
-			DBname:     getEnv("DATABASE_NAME", ""),
-			User:       getEnv("DATABASE_USER", ""),
-			Password:   getEnv("DATABASE_PASSWORD", ""),
-			Host:       getEnv("DATABASE_HOST", "localhost"),
-			Port:       getEnvAsInt("DATABASE_PORT", 5432),
+			SqliteFolderPath: getEnv("SQLITE_DB_FOLDER", ""),
+			SqliteFileName:   getEnv("SQLITE_DB_NAME", ""),
 		},
 		Frontend: FrontendCorsConfig{
 			Host: getEnv("FRONTEND_HOST", "http://localhost"),
