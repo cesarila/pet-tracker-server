@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +27,19 @@ type ApiTestSuite struct {
 
 func (suite *ApiTestSuite) SetupTest() {
 	suite.Config = New()
+	suite.Config.Database.SqliteFileName = "test.db"
+	databaseFullPath := fmt.Sprintf("%s/%s", suite.Config.Database.SqliteFolderPath, suite.Config.Database.SqliteFileName)
+	err := os.Remove(databaseFullPath)
+	if err != nil {
+		suite.FailNow("Failed to remove old test data: " + err.Error())
+	}
+	db, err := initDatabase(databaseFullPath)
+	if err != nil {
+		suite.FailNow(err.Error())
+	}
+	if db == nil {
+		suite.FailNow("Database not nil sanity check failed")
+	}
 	suite.Router = setupRouter(suite.Config)
 }
 

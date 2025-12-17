@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"strings"
 
 	_ "modernc.org/sqlite"
 )
@@ -19,11 +20,11 @@ type PetDbRow struct {
 
 var sqliteDB *sql.DB
 
-func initDatabase(dbPath string) error {
+func initDatabase(dbPath string) (*sql.DB, error) {
 	var err error
 	sqliteDB, err = sql.Open("sqlite", dbPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	_, err = sqliteDB.ExecContext(
 		context.Background(),
@@ -34,9 +35,9 @@ func initDatabase(dbPath string) error {
 		)`,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return sqliteDB, nil
 }
 
 func getPets() ([]PetDbRow, error) {
@@ -67,11 +68,19 @@ func addPet(p *Pet) (int64, error) {
 		context.Background(),
 		`INSERT INTO t_pets (name, inside) VALUES (?,?);`, p.Name, p.Inside,
 	)
-	id, err := result.LastInsertId()
+	if err != nil {
+		if strings.Contains(err.Error(), "UNIQUE constraint failed: t_pets.name") == true {
+			return 0, nil
+		} else {
+			return -1, err
+		}
+	}
+	rowsAffected, err := result.RowsAffected()
+	// id, err := result.LastInsertId()
 	if err != nil {
 		return -1, err
 	}
-	return id, nil
+	return rowsAffected, nil
 }
 
 func updatePetStatus(p *Pet) (int64, error) {
