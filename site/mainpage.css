@@ -1,0 +1,34 @@
+body{
+    background-color: #444444;
+}
+
+td > button, form > button, input, tr > td, label {
+    font-size: max(1.5vh, 12px)
+}
+
+
+form {
+    padding: 0.5vw;
+    padding-bottom: 3vh;
+}
+
+input, button {
+    background-color: #cccccc;
+    color: #222222;
+}
+
+tr > td, label {
+    color: #dddddd;
+    padding: 0.5vw;
+}
+
+tr > td {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+#petDisplay {
+    padding-top: 3vh;
+    background-color: #333333;
+    color: #333333;
+}
